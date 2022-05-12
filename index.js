@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors')
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const port = process.env.PORT || 5000;
@@ -19,6 +20,16 @@ async function run() {
         await client.connect();
         const inventoryCollection = client.db('laptopBazar').collection('products')
         const inventoryManageCollection = client.db('laptopBazar').collection('allProducts')
+        const addedItemsCollection = client.db('laptopBazar').collection('ItemsAdded')
+
+        //Auth
+        app.post('/login', async (req, res) => {
+            const user = req.body;
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: '1d'
+            });
+            res.send({ accessToken });
+        })
 
         //to find all 
         app.get('/inventory', async (req, res) => {
@@ -67,11 +78,20 @@ async function run() {
             const result = await inventoryManageCollection.deleteOne(query);
             res.send(result);
         })
-        //POST(add)
-        app.post('/inventory', async (req, res) => {
+        //POST(addItems)
+        app.post('/myItems', async (req, res) => {
             const newProduct = req.body;
-            const result = await inventoryManageCollection.insertOne(newProduct);
+            const result = await addedItemsCollection.insertOne(newProduct);
             res.send(result);
+        })
+
+        app.get('/myItems', async (req, res) => {
+            const email = req.query.email;
+            console.log(email);
+            const query = { email: email };
+            const cursor = addedItemsCollection.find(query);
+            const products = await cursor.toArray();
+            res.send(products)
         })
 
     }
