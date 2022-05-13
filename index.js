@@ -13,7 +13,7 @@ app.use(express.json());
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-        return res.status(401).send({ message: 'unautherized access' })
+        return res.status(401).send({ message: 'unauthorized access' })
     }
     const token = authHeader.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
@@ -24,8 +24,6 @@ function verifyJWT(req, res, next) {
         req.decoded = decoded;
         next();
     })
-
-
 }
 
 
@@ -64,7 +62,7 @@ async function run() {
 
 
 
-        //to find single 
+        //to find single product 
         app.get('/inventory/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
