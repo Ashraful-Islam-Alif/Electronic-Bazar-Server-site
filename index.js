@@ -96,8 +96,11 @@ async function run() {
         //POST(addItems)
         app.post('/myItems', async (req, res) => {
             const newProduct = req.body;
-            const result = await addedItemsCollection.insertOne(newProduct);
+
+            const result = await inventoryManageCollection.insertOne(newProduct);
+            console.log('Inserted');
             res.send(result);
+
         })
 
         app.get('/myItems', verifyJWT, async (req, res) => {
@@ -106,7 +109,7 @@ async function run() {
             const email = req.query.email;
             if (email === decodedEmail) {
                 const query = { email };
-                const cursor = addedItemsCollection.find(query);
+                const cursor = inventoryManageCollection.find(query);
                 const products = await cursor.toArray();
                 res.send(products)
             }
