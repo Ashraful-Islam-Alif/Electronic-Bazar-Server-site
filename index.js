@@ -71,7 +71,7 @@ async function run() {
             res.send(inventory);
         })
 
-        //Reduce Quantity.
+        //Reduce Quantity
         app.put('/inventory/:id', async (req, res) => {
             const id = req.params.id;
             const updatedUser = req.body;
